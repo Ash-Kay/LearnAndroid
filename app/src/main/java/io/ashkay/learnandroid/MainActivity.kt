@@ -3,6 +3,7 @@ package io.ashkay.learnandroid
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.ashkay.coroutine.CoroutineMainActivity
 import io.ashkay.learnandroid.databinding.ActivityMainBinding
 import io.ashkay.learnandroid.viewstubbing.ViewStubbingExample
 
@@ -19,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     private fun setup() {
         binding.startViewStubbingExample.setOnClickListener {
             startActivity(Intent(this, ViewStubbingExample::class.java))
+        }
+        binding.startCoroutineExample.setOnClickListener {
+            startActivity(Intent(this, CoroutineMainActivity::class.java))
         }
     }
 
