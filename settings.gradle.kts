@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "LearnAndroid"
 include(":app")
 include(":coroutine")
+include(":di")
