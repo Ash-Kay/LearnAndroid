@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.ashkay.coroutine.CoroutineMainActivity
 import io.ashkay.di.DiMainActivity
 import io.ashkay.learnandroid.databinding.ActivityMainBinding
+import io.ashkay.learnandroid.lifecycle.LifecycleActivity
 import io.ashkay.learnandroid.viewstubbing.ViewStubbingExample
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.startDiExample.setOnClickListener {
             startActivity(Intent(this, DiMainActivity::class.java))
+        }
+        binding.startLifeCycleExample.setOnClickListener {
+            startActivity(Intent(this, LifecycleActivity::class.java))
         }
     }
 

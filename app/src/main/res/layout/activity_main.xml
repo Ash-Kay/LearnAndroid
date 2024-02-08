@@ -34,6 +34,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="Start Dependency Injection Example" />
+
+            <Button
+                android:id="@+id/startLifeCycleExample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Start Lifecycle Example" />
         </LinearLayout>
 
     </ScrollView>
