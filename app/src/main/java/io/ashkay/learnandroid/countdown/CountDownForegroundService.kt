@@ -1,11 +1,15 @@
 package io.ashkay.learnandroid.countdown
 
+import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import io.ashkay.learnandroid.R
 import io.ashkay.learnandroid.countdown.CountDownActivity.Companion.COUNT_DOWN_CHANNEL
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -13,9 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class CountDownForegroundService : Service() {
 
     val TAG = "CountDownForegroundService:"
-    val duration: Long = 30 * 10_00
     val timeLeft = MutableStateFlow(-1)
     var countDownTimer: CountDownTimer? = null
+    val notificationId = 1
 
     private val binder = LocalBinder()
 
@@ -29,24 +33,37 @@ class CountDownForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground()
-//        startCountdown(duration)
         return START_STICKY
     }
 
     private fun startForeground() {
-        try {
-            val notification = NotificationCompat.Builder(this, COUNT_DOWN_CHANNEL)
-                .setContentTitle("Count Down Timer")
-                .setWhen(System.currentTimeMillis() + duration)
-                .setChronometerCountDown(true)
-                .setUsesChronometer(true)
-                .setAutoCancel(true)
-                .setOngoing(true)
-                .build()
+        startForeground(notificationId, getNotification(""))
+    }
 
-            startForeground(1, notification)
+    private fun getNotification(timeLeft: String): Notification {
+        val openCountDownActivity = Intent(this, CountDownActivity::class.java)
+        val pendingIntent =
+            PendingIntent.getActivity(this, 0, openCountDownActivity, PendingIntent.FLAG_IMMUTABLE)
+
+        return NotificationCompat.Builder(this, COUNT_DOWN_CHANNEL)
+            .setContentTitle("Count Down Timer")
+            .setContentText("Time Left => $timeLeft")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setOnlyAlertOnce(true)
+            .setOngoing(true)
+            .build()
+    }
+
+    private fun updateNotification(timeLeft: String) {
+        val notification = getNotification(timeLeft)
+        val mNotificationManager = NotificationManagerCompat.from(this)
+
+        try {
+            mNotificationManager.notify(notificationId, notification)
         } catch (e: Exception) {
-            println("$TAG Error: $e")
+            println(e)
         }
     }
 
@@ -57,6 +74,7 @@ class CountDownForegroundService : Service() {
         countDownTimer = object : CountDownTimer(millisInFuture, 1_000) {
             override fun onTick(millisUntilFinished: Long) {
                 timeLeft.value = (millisUntilFinished / 1000).toInt()
+                updateNotification(timeLeft.value.toString())
                 println("$TAG timeleft : $millisUntilFinished")
             }
 
