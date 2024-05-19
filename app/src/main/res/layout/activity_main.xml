@@ -48,6 +48,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="Start Count Down Sample" />
+
+            <Button
+                android:id="@+id/startBackgroundWorkerPlayground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Start Background Worker Playground" />
         </LinearLayout>
 
     </ScrollView>

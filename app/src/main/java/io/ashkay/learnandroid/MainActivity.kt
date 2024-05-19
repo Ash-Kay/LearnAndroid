@@ -8,6 +8,7 @@ import io.ashkay.di.DiMainActivity
 import io.ashkay.learnandroid.countdown.CountDownActivity
 import io.ashkay.learnandroid.databinding.ActivityMainBinding
 import io.ashkay.learnandroid.lifecycle.LifecycleActivity
+import io.ashkay.learnandroid.scheduler.BackgroundWorkerActivity
 import io.ashkay.learnandroid.viewstubbing.ViewStubbingExample
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.startCountDownSample.setOnClickListener {
             startActivity(Intent(this, CountDownActivity::class.java))
+        }
+        binding.startBackgroundWorkerPlayground.setOnClickListener {
+            startActivity(Intent(this, BackgroundWorkerActivity::class.java))
         }
     }
 
