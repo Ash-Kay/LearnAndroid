@@ -6,6 +6,8 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.ashkay.coroutine.databinding.ActivityCoroutineMainBinding
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,13 +40,13 @@ class CoroutineMainActivity : AppCompatActivity() {
             handler1.post {
                 repeat(50) {
                     Thread.sleep(50)
-                    println("${LooperHandlerQueue} [1] ${it}")
+                    println("${CoroutineMainTag} [1] ${it}")
                 }
             }
             handler1.post {
                 repeat(50) {
                     Thread.sleep(50)
-                    println("${LooperHandlerQueue} [2] ${it}")
+                    println("${CoroutineMainTag} [2] ${it}")
                 }
             }
 
@@ -53,43 +55,55 @@ class CoroutineMainActivity : AppCompatActivity() {
             handler2.post {
                 repeat(50) {
                     Thread.sleep(50)
-                    println("${LooperHandlerQueue} [3] ${it}")
+                    println("${CoroutineMainTag} [3] ${it}")
                 }
             }
             handler2.post {
                 repeat(50) {
                     Thread.sleep(50)
-                    println("${LooperHandlerQueue} [4] ${it}")
+                    println("${CoroutineMainTag} [4] ${it}")
                 }
             }
             Looper.loop()
         }
     }
 
-    fun checkingChildJobs() {
+    private fun checkingChildJobs() {
         val parentJob = lifecycleScope.launch {
             val childJob1 = launch {
                 delay(1000)
-                println("${ChildJobTag}: Hi i'm child job 1")
+                println("${CoroutineMainTag}: Hi i'm child job 1")
             }
             val childJob2 = launch {
                 delay(2000)
-                println("${ChildJobTag}: Hi i'm child job 2")
+                println("${CoroutineMainTag}: Hi i'm child job 2")
+            }
+            val childJob3 = launch(Job()) { //providing new Job so it doesn't inherit
+                delay(2000)
+                println("${CoroutineMainTag}: Hi i'm NOT a child job as I don't inherit job")
             }
         }
 
-        println("${ChildJobTag}: Parent job's children" + parentJob.children.toList())
+        println("${CoroutineMainTag}: Parent job's children count " + parentJob.children.toList().size)
+        println("${CoroutineMainTag}: Parent job's children " + parentJob.children.toList())
     }
 
     private fun checkJobCancel() {
-        lifecycleScope.launch {
+        val coroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            println("${CoroutineMainTag}: parent caught exception : $throwable")
+        }
+
+        lifecycleScope.launch(coroutineExceptionHandler) {
             val parentJob = launch {
+                //NOTE: adding coroutineExceptionHandler here (in parentJob) will be of no use as
+                // exception will still propagate to root launching parent
+
                 val child1 = launch {
                     repeat(100) {
                         delay(10)
-                        println("${JobCancelTag}: Child 1 : ${it}")
+                        println("${CoroutineMainTag}: Child 1 : ${it}")
                         if (it == 40) {
-                            println("${JobCancelTag}: throwing exception in Child 1")
+                            println("${CoroutineMainTag}: throwing exception in Child 1")
                             throw Exception("Error") // will stop all the sibling coroutine
                         }
                     }
@@ -97,9 +111,9 @@ class CoroutineMainActivity : AppCompatActivity() {
                 val child2 = launch {
                     repeat(100) {
                         delay(10)
-                        println("${JobCancelTag}: Child 2 : ${it}")
+                        println("${CoroutineMainTag}: Child 2 : ${it}")
                         if (it == 20) {
-                            println("${JobCancelTag}: cancelling in Child 2")
+                            println("${CoroutineMainTag}: cancelling in Child 2")
                             cancel() //other coroutines will keep running
                         }
                     }
@@ -107,19 +121,15 @@ class CoroutineMainActivity : AppCompatActivity() {
                 val child3 = launch {
                     repeat(100) {
                         delay(10)
-                        println("${JobCancelTag}: Child 3 : ${it}")
+                        println("${CoroutineMainTag}: Child 3 : ${it}")
                     }
                 }
             }
         }
-
-
     }
 
 
     companion object {
-        const val ChildJobTag = "ChildJobTag"
-        const val JobCancelTag = "JobCancelTag"
-        const val LooperHandlerQueue = "LooperHandlerQueue"
+        const val CoroutineMainTag = "CoroutineMainTag"
     }
 }
