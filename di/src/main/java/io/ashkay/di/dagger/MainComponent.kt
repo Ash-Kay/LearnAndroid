@@ -5,13 +5,14 @@ import dagger.BindsInstance
 import dagger.Component
 import io.ashkay.di.DiMainActivity
 
-//@Component
-//interface MainComponent {
-//
-//    interface Factory {
-//        fun build(@BindsInstance context: Context)
-//    }
-//
-//    fun inject(activity: DiMainActivity)
-//
-//}
+@Component(modules = [ModuleOne::class])
+interface MainComponent {
+
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance context: Context): MainComponent
+    }
+
+    fun inject(activity: DiMainActivity)
+
+}

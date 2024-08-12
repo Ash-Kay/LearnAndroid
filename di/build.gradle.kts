@@ -44,6 +44,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     //di
-    implementation("com.google.dagger:dagger:2.44")
-    kapt("com.google.dagger:dagger-compiler:2.44")
+    implementation("com.google.dagger:dagger:2.51.1")
+    kapt("com.google.dagger:dagger-compiler:2.50")
 }
