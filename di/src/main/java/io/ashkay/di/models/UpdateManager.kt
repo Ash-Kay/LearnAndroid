@@ -1,10 +1,19 @@
 package io.ashkay.di.models
 
-class UpdateManager(
+class UpdateManagerSameTTL(
     val ttl: Int,
     val updateUrl: String,
 ) {
     fun update() {
-        println("ASHTEST: UpdateManager: update: $updateUrl $ttl")
+        println("ASHTEST: UpdateManagerSameTTL: update: $updateUrl $ttl")
+    }
+}
+
+class UpdateManager(
+    val remoteConfig: RemoteConfig,
+    val updateUrl: String,
+) {
+    fun update() {
+        println("ASHTEST: UpdateManager: update: $updateUrl ${remoteConfig.getConfig()}")
     }
 }
