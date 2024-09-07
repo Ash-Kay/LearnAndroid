@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.ashkay.coroutine.databinding.ActivityCoroutineMainBinding
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 
 class CoroutineMainActivity : AppCompatActivity() {
@@ -29,6 +31,9 @@ class CoroutineMainActivity : AppCompatActivity() {
         }
         binding.startHandler.setOnClickListener {
             looperHandlerQueue()
+        }
+        binding.startDispatcherExample.setOnClickListener {
+            checkDifferentDispatchersWork()
         }
     }
 
@@ -124,6 +129,38 @@ class CoroutineMainActivity : AppCompatActivity() {
                         println("${CoroutineMainTag}: Child 3 : ${it}")
                     }
                 }
+            }
+        }
+    }
+
+    private fun checkDifferentDispatchersWork() {
+        lifecycleScope.launch {
+            println("${CoroutineMainTag}: Unspecified thread is ${Thread.currentThread().name}")
+
+            withContext(Dispatchers.Default) {
+                println("${CoroutineMainTag}: Dispatchers.Default thread is ${Thread.currentThread().name}")
+            }
+
+
+            withContext(Dispatchers.IO) {
+                repeat(8) {
+                    println("${CoroutineMainTag}: Dispatchers.IO thread working $it")
+                    Thread.sleep(1000)
+                }
+                println("${CoroutineMainTag}: Dispatchers.IO thread is ${Thread.currentThread().name}")
+            }
+
+
+            withContext(Dispatchers.Main) {
+                repeat(8) {
+                    println("${CoroutineMainTag}: Dispatchers.Main thread working [Main Thread Blocked] $it")
+                    Thread.sleep(1000)
+                }
+                println("${CoroutineMainTag}: Dispatchers.Main thread is ${Thread.currentThread().name}")
+            }
+
+            withContext(Dispatchers.Unconfined) {
+                println("${CoroutineMainTag}: Dispatchers.Unconfined thread is ${Thread.currentThread().name}")
             }
         }
     }
